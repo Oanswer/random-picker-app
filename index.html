@@ -229,7 +229,7 @@ textarea::placeholder,input::placeholder{color:#555}
     <h1>🎰 随机抽取大师</h1>
     <div class="header-actions">
       <div class="icon-btn" onclick="showPage('online')" title="联机" id="onlineBtn">🌐</div>
-      <div class="icon-btn" onclick="showPage('zww')" title="张雯雯" id="zwwBtn">💕</div>
+      <div class="icon-btn" onclick="showPage('zww')" title="张雯雯" id="zwwBtn">✨</div>
       <div class="icon-btn" onclick="showPage('group')" title="社会主义群" id="groupBtn">☭</div>
       <div class="icon-btn" onclick="showPage('settings')" title="设置">⚙️</div>
       <div class="icon-btn" onclick="showPage('presets')" title="预设">📋</div>
@@ -348,7 +348,6 @@ textarea::placeholder,input::placeholder{color:#555}
       <h2 style="font-size:28px;margin-bottom:4px;position:relative;">💕 张雯雯的小天地</h2>
       <div style="font-size:13px;color:rgba(255,255,255,.8);position:relative;">专属甜蜜空间 ✨</div>
     </div>
-    <div class="card"><div class="card-title">💌 每日情话</div><div id="dailyLove" style="text-align:center;padding:12px;font-size:16px;color:#ff6b9d;line-height:1.8;min-height:60px;"></div><button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#ff6b9d,#c44569);" onclick="genDailyLove()">💌 换一句</button></div>
     <div class="card"><div class="card-title">🔮 塔罗占卜</div><div id="tarotArea" style="text-align:center;"></div><button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#6c5ce7,#a29bfe);" onclick="drawTarot()">🔮 抽牌</button></div>
     <div class="card"><div class="card-title">🌙 晚安语录</div><div id="goodNight" style="text-align:center;padding:12px;font-size:15px;color:#a29bfe;line-height:1.8;min-height:60px;"></div><button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#2d3436,#636e72);" onclick="genGoodNight()">🌙 换一句</button></div>
     <div class="card"><div class="card-title">🎂 纪念日倒数</div><div id="countdowns"></div><div style="display:flex;gap:8px;margin-top:10px;"><input type="text" id="cdName" placeholder="事件名称" style="flex:1;"><input type="date" id="cdDate" style="width:140px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;padding:10px;"><button class="btn btn-primary" style="flex:0;padding:10px 14px;background:linear-gradient(135deg,#fd79a8,#e84393);" onclick="addCountdown()">+</button></div></div>
@@ -920,8 +919,7 @@ const SWEET_CHATS=[{a:'你知道你和星星的区别吗？',b:'什么？',a:'�
 const SELFIE_QUOTES=['今天的你，值得被世界温柔相待','自拍不是臭美，是记录美好','你的笑容是最好的滤镜','每一张自拍都是自信的证明','今天的妆容配得上所有好运气','素颜也是一种美','你不需要滤镜，你就是光','拍照的意义是记住快乐的自己','记录今天的自己，因为以后再也不会这么年轻了','今天的你闪闪发光'];
 
 let zwwInited=false;
-function initZww(){if(zwwInited)return;zwwInited=true;genDailyLove();genGoodNight();genSelfieQuote();genSweetChat();renderCountdowns();renderWishes();renderMoodHistory()}
-function genDailyLove(){const el=document.getElementById('dailyLove');el.style.opacity=0;setTimeout(()=>{el.textContent=rand(LOVE_WORDS);el.style.opacity=1;el.style.transition='opacity .3s'},200)}
+function initZww(){if(zwwInited)return;zwwInited=true;genGoodNight();genSelfieQuote();genSweetChat();renderCountdowns();renderWishes();renderMoodHistory()}
 function drawTarot(){const card=rand(TAROT_CARDS),isRev=Math.random()<0.3;const el=document.getElementById('tarotArea');el.innerHTML=`<div style="animation:popIn .3s ease;"><div style="font-size:60px;margin-bottom:8px;">${card.emoji}</div><div style="font-size:20px;font-weight:bold;color:#a29bfe;margin-bottom:4px;">${card.name}${isRev?' (逆位)':''}</div><div style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">${isRev?card.reversed:card.upright}</div><div style="font-size:14px;color:#ff6b9d;padding:8px 16px;background:rgba(255,107,157,.1);border-radius:10px;display:inline-block;">💕 爱情：${card.love}</div></div>`}
 function genGoodNight(){const el=document.getElementById('goodNight');el.style.opacity=0;setTimeout(()=>{el.textContent=rand(GOOD_NIGHTS);el.style.opacity=1;el.style.transition='opacity .3s'},200)}
 
