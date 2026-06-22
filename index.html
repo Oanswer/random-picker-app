@@ -390,11 +390,8 @@ textarea::placeholder,input::placeholder{color:#555}
 <div class="modal-bg" id="nameModal"><div class="modal"><div class="modal-title">选择你的昵称<div class="modal-close" onclick="closeNameModal()">✕</div></div><input type="text" id="nameModalInput" placeholder="输入昵称" maxlength="8" style="margin-bottom:12px;"><button class="btn btn-primary" style="width:100%;" onclick="confirmName()">确认</button></div></div>
 <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleFile(event)">
 
-<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-app-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-database-compat.js"></script>
 <script>
-// ========== FIREBASE CONFIG ==========
-// ⚠️ 替换为你自己的 Firebase 配置
+// ========== FIREBASE CONFIG (async load) ==========
 const firebaseConfig = {
   apiKey: "AIzaSyBdW3lz4M86dym2YGMuUCizPviFHSqLL2U",
   authDomain: "answer-daea8.firebaseapp.com",
@@ -415,36 +412,35 @@ let onlineMembers = {};
 let currentGame = null;
 let myChoice = null;
 let gameData = {};
-
-// Try to init Firebase
 let firebaseReady = false;
-try {
-  if(typeof firebase !== 'undefined') {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.database();
-    // Test connection
-    db.ref('.info/connected').on('value', function(s) {
-      firebaseReady = s.val() === true;
-      console.log('Firebase connected:', firebaseReady);
-      const dot = document.getElementById('connDot');
-      const txt = document.getElementById('connText');
-      if(dot) dot.style.background = firebaseReady ? '#2ecc71' : '#e74c3c';
-      if(txt) txt.textContent = firebaseReady ? '已连接服务器' : '连接失败，请检查网络';
-    });
-  } else {
-    console.error('Firebase SDK not loaded');
-    const dot = document.getElementById('connDot');
-    const txt = document.getElementById('connText');
-    if(dot) dot.style.background = '#e74c3c';
-    if(txt) txt.textContent = 'SDK加载失败，请刷新页面';
-  }
-} catch(e) {
-  console.error('Firebase init error:', e);
-  const dot = document.getElementById('connDot');
-  const txt = document.getElementById('connText');
-  if(dot) dot.style.background = '#e74c3c';
-  if(txt) txt.textContent = '初始化失败: '+e.message;
-}
+
+// Load Firebase async so it doesn't block the main app
+(function loadFirebase() {
+  const s1 = document.createElement('script');
+  s1.src = 'https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-app-compat.js';
+  s1.onload = function() {
+    const s2 = document.createElement('script');
+    s2.src = 'https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-database-compat.js';
+    s2.onload = function() {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        db.ref('.info/connected').on('value', function(s) {
+          firebaseReady = s.val() === true;
+          const dot = document.getElementById('connDot');
+          const txt = document.getElementById('connText');
+          if(dot) dot.style.background = firebaseReady ? '#2ecc71' : '#e74c3c';
+          if(txt) txt.textContent = firebaseReady ? '已连接服务器' : '连接失败，请检查网络';
+        });
+        console.log('Firebase ready');
+      } catch(e) { console.error('Firebase init error:', e); }
+    };
+    s2.onerror = function() { console.error('Firebase DB SDK load failed'); };
+    document.head.appendChild(s2);
+  };
+  s1.onerror = function() { console.error('Firebase App SDK load failed'); };
+  document.head.appendChild(s1);
+})();
 
 // ========== DATA ==========
 const GROUP = ['徐源','李永宁','周玉韬','康博源','齐雪秀'];
