@@ -927,7 +927,7 @@ function genPoisonSoup(){const el=document.getElementById('poisonSoup');el.style
 function genJoke(){const el=document.getElementById('jokeArea');el.style.opacity=0;setTimeout(()=>{el.textContent=rand(JOKES);el.style.opacity=1;el.style.transition='opacity .3s'},200)}
 function genColdFact(){const el=document.getElementById('coldFact');el.style.opacity=0;setTimeout(()=>{el.textContent=rand(COLD_FACTS);el.style.opacity=1;el.style.transition='opacity .3s'},200)}
 function genCaption(){const el=document.getElementById('captionGen');el.style.opacity=0;setTimeout(()=>{el.textContent=rand(CAPTIONS);el.style.opacity=1;el.style.transition='opacity .3s'},200)}
-function genEatWhat(){const el=document.getElementById('eatWhat');el.style.opacity=0;setTimeout(()=>{el.textContent='🍜 今天吃：'+rand(FOODS);el.style.opacity=1;el.style.transition='opacity .3s'},200)}}]}
+function genEatWhat(){const el=document.getElementById('eatWhat');el.style.opacity=0;setTimeout(()=>{el.textContent='🍜 今天吃：'+rand(FOODS);el.style.opacity=1;el.style.transition='opacity .3s'},200)}
 
 let countdowns=[];
 function loadCD(){try{countdowns=JSON.parse(localStorage.getItem('zwwCountdowns')||'[]')}catch(e){countdowns=[]}}
