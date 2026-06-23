@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
@@ -388,6 +388,7 @@ textarea::placeholder,input::placeholder{color:#555}
 <div class="modal-bg" id="addPresetModal"><div class="modal"><div class="modal-title">新建预设<div class="modal-close" onclick="closePresetModal()">✕</div></div><input type="text" id="presetNameInput" placeholder="预设名称" style="margin-bottom:10px;"><textarea id="presetItemsInput" placeholder="每行一个选项" style="height:150px;"></textarea><div class="btn-row"><button class="btn btn-outline" onclick="closePresetModal()">取消</button><button class="btn btn-primary" onclick="savePreset()">保存</button></div></div></div>
 <div class="modal-bg" id="importModal"><div class="modal"><div class="modal-title">导入数据<div class="modal-close" onclick="document.getElementById('importModal').classList.remove('show')">✕</div></div><textarea id="importDataInput" placeholder="粘贴导出的JSON数据" style="height:150px;"></textarea><div class="btn-row"><button class="btn btn-outline" onclick="document.getElementById('importModal').classList.remove('show')">取消</button><button class="btn btn-primary" onclick="doImport()">导入</button></div></div></div>
 <div class="modal-bg" id="nameModal"><div class="modal"><div class="modal-title">选择你的昵称<div class="modal-close" onclick="closeNameModal()">✕</div></div><input type="text" id="nameModalInput" placeholder="输入昵称" maxlength="8" style="margin-bottom:12px;"><button class="btn btn-primary" style="width:100%;" onclick="confirmName()">确认</button></div></div>
+<div class="modal-bg" id="pwModal"><div class="modal" style="max-width:320px;"><div class="modal-title">&#x1f512; 需要密码<div class="modal-close" onclick="closePwModal()">&#x2715;</div></div><p style="color:var(--text-dim);font-size:13px;margin:8px 0 16px;">请输入访问密码</p><input type="password" id="pwInput" placeholder="输入密码" onkeydown="pwKeydown(event)" style="margin-bottom:8px;"><div id="pwError" style="display:none;color:#e74c3c;font-size:12px;margin-bottom:8px;">&#x274c; 密码错误，请重试</div><div class="btn-row"><button class="btn btn-outline" onclick="closePwModal()">取消</button><button class="btn btn-primary" onclick="submitPw()">确认</button></div></div></div>
 <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleFile(event)">
 
 <script>
@@ -908,12 +909,17 @@ function closeGroupModal(){document.getElementById('groupModal').classList.remov
 // ========== UI ==========
 function showPage(name){
   if(name==='zww'&&!zwwUnlocked){
-    const pw=prompt('请输入密码：');
-    if(pw!=='zww123'){if(pw!==null)alert('密码错误！');return}
-    zwwUnlocked=true;
+    showPasswordModal();
+    return;
   }
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');document.querySelectorAll('.icon-btn').forEach(b=>b.classList.remove('active'));if(name==='online')document.getElementById('onlineBtn').classList.add('active');if(name==='group'){document.getElementById('groupBtn').classList.add('active');renderScoreBoard()};if(name==='zww'){document.getElementById('zwwBtn').classList.add('active');initZww()}}
+  doShowPage(name);
+}
+function doShowPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');document.querySelectorAll('.icon-btn').forEach(b=>b.classList.remove('active'));if(name==='online')document.getElementById('onlineBtn').classList.add('active');if(name==='group'){document.getElementById('groupBtn').classList.add('active');renderScoreBoard()};if(name==='zww'){document.getElementById('zwwBtn').classList.add('active');initZww()}}
 let zwwUnlocked=false;
+function showPasswordModal(){const m=document.getElementById('pwModal');m.classList.add('show');setTimeout(()=>document.getElementById('pwInput').focus(),100);document.getElementById('pwError').style.display='none'}
+function closePwModal(){document.getElementById('pwModal').classList.remove('show');document.getElementById('pwInput').value=''}
+function submitPw(){const v=document.getElementById('pwInput').value;if(v==='zww123'){zwwUnlocked=true;closePwModal();doShowPage('zww')}else{document.getElementById('pwError').style.display='block';document.getElementById('pwInput').value='';document.getElementById('pwInput').focus()}}
+function pwKeydown(e){if(e.key==='Enter')submitPw();if(e.key==='Escape')closePwModal()}
 
 // ========== 张雯雯模块 ==========
 const POISON_SOUP=['你觉得自己很累？别人也很累','不要因为没有掌声而放弃梦想，因为你根本没有梦想','世上无难事，只要肯放弃','比你优秀的人都在努力，你努力有什么用','条条大路通罗马，而有些人就生在罗马','失败并不可怕，可怕的是你还相信这句话','你才二十多岁，没遇到喜欢的人很正常，往后你会发现，大概是遇不到了','万事开头难，然后中间难，最后结尾难','当你觉得自己不行的时候，你就走到斑马线上，这样你就会成为一个行人','上帝是公平的，给了你丑的外表，还会给你低的智商','你不努力一下，怎么知道什么叫绝望','有些人出现在你的生命里，就是为了告诉你：你真好骗','生活不止眼前的苟且，还有读不懂的诗和到不了的远方','有时候你不努力一下，都不知道什么叫绝望','别灰心，人生就是这样起起落落落落落落的'];
