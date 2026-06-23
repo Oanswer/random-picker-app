@@ -1049,11 +1049,11 @@ function initUI(){document.getElementById('itemInput').value=state.items.join('\
 loadState();initUI();
 
 // ========== MINI GAMES ==========
-let currentGame=null,gameLoop=null,gameScore=0;
+let activeGame=null,gameTimer=null,gameScore=0;
 const gameBests=JSON.parse(localStorage.getItem('gameBests')||'{}');
 function saveBest(g){localStorage.setItem('gameBests',JSON.stringify(gameBests))}
 function openGame(name){
-  currentGame=name;gameScore=0;
+  activeGame=name;gameScore=0;
   document.getElementById('gameScoreDisplay').textContent='0';
   document.getElementById('gameBestDisplay').textContent='最高: '+(gameBests[name]||0);
   doShowPage('gameplay');
@@ -1065,8 +1065,8 @@ function openGame(name){
   else if(name==='flappy')initFlappy();
 }
 function closeGame(){
-  if(gameLoop){clearInterval(gameLoop);gameLoop=null;}
-  currentGame=null;
+  if(gameTimer){clearInterval(gameTimer);gameTimer=null;}
+  activeGame=null;
   document.getElementById('gameArea').innerHTML='';
   document.getElementById('gameControls').innerHTML='';
   showPage('games');
@@ -1101,7 +1101,7 @@ function init2048(){
   let tx=0,ty=0,down=false;
   c.addEventListener('touchstart',e=>{const t=e.touches[0];tx=t.clientX;ty=t.clientY;down=true;e.preventDefault()});
   c.addEventListener('touchend',e=>{if(!down)return;down=false;const t=e.changedTouches[0];const dx=t.clientX-tx,dy=t.clientY-ty;if(Math.abs(dx)+Math.abs(dy)<30)return;move2048(Math.abs(dx)>Math.abs(dy)?(dx>0?1:-1):0,Math.abs(dx)>Math.abs(dy)?0:(dy>0?1:-1));e.preventDefault()});
-  document.onkeydown=e=>{if(currentGame!=='2048')return;if(e.key==='ArrowUp')move2048(0,-1);if(e.key==='ArrowDown')move2048(0,1);if(e.key==='ArrowLeft')move2048(-1,0);if(e.key==='ArrowRight')move2048(1,0)};
+  document.onkeydown=e=>{if(activeGame!=='2048')return;if(e.key==='ArrowUp')move2048(0,-1);if(e.key==='ArrowDown')move2048(0,1);if(e.key==='ArrowLeft')move2048(-1,0);if(e.key==='ArrowRight')move2048(1,0)};
 }
 function add2048Tile(){
   const empty=[];
@@ -1192,12 +1192,12 @@ function initSnake(){
   document.getElementById('gameControls').innerHTML='<div style="display:grid;grid-template-columns:repeat(3,64px);gap:6px;"><div></div><button class="game-btn" onclick="setSnakeDir(0,-1)">⬆️</button><div></div><button class="game-btn" onclick="setSnakeDir(-1,0)">⬅️</button><button class="game-btn" onclick="setSnakeDir(0,1)">⬇️</button><button class="game-btn" onclick="setSnakeDir(1,0)">➡️</button></div>';
   placeSnakeFood();
   if(gameLoop)clearInterval(gameLoop);
-  gameLoop=setInterval(tickSnake,120);
+  gameTimer=setInterval(tickSnake,120);
   const c=document.getElementById('cSnake');
   let tx=0,ty=0;
   c.addEventListener('touchstart',e=>{const t=e.touches[0];tx=t.clientX;ty=t.clientY;e.preventDefault()});
   c.addEventListener('touchend',e=>{const t=e.changedTouches[0];const dx=t.clientX-tx,dy=t.clientY-ty;if(Math.abs(dx)+Math.abs(dy)<20)return;setSnakeDir(Math.abs(dx)>Math.abs(dy)?(dx>0?1:-1):0,Math.abs(dx)>Math.abs(dy)?0:(dy>0?1:-1));e.preventDefault()});
-  document.onkeydown=e=>{if(currentGame!=='snake')return;if(e.key==='ArrowUp')setSnakeDir(0,-1);if(e.key==='ArrowDown')setSnakeDir(0,1);if(e.key==='ArrowLeft')setSnakeDir(-1,0);if(e.key==='ArrowRight')setSnakeDir(1,0)};
+  document.onkeydown=e=>{if(activeGame!=='snake')return;if(e.key==='ArrowUp')setSnakeDir(0,-1);if(e.key==='ArrowDown')setSnakeDir(0,1);if(e.key==='ArrowLeft')setSnakeDir(-1,0);if(e.key==='ArrowRight')setSnakeDir(1,0)};
 }
 function setSnakeDir(x,y){if(snakeDir.x===-x&&snakeDir.y===-y)return;snakeDir={x,y}}
 function placeSnakeFood(){const occ=new Set(snake.map(s=>s.x+','+s.y));let p;do{p={x:Math.floor(Math.random()*20),y:Math.floor(Math.random()*20)}}while(occ.has(p.x+','+p.y));snakeFood=p}
@@ -1205,7 +1205,7 @@ function tickSnake(){
   if(!snakeRunning)return;
   const head={x:snake[0].x+snakeDir.x,y:snake[0].y+snakeDir.y};
   if(head.x<0||head.x>=20||head.y<0||head.y>=20||snake.some(s=>s.x===head.x&&s.y===head.y)){
-    snakeRunning=false;clearInterval(gameLoop);showGameOver('游戏结束',snake.length-1,'🐍');return;
+    snakeRunning=false;clearInterval(gameTimer);showGameOver('游戏结束',snake.length-1,'🐍');return;
   }
   snake.unshift(head);
   if(head.x===snakeFood.x&&head.y===snakeFood.y){updateGameScore(snake.length-1);placeSnakeFood()}
@@ -1311,13 +1311,13 @@ function initFlappy(){
   const c=document.getElementById('cFlappy');
   c.addEventListener('touchstart',e=>{flappyTap();e.preventDefault()});
   c.addEventListener('click',()=>flappyTap());
-  document.onkeydown=e=>{if(currentGame==='flappy'&&e.key===' ')flappyTap()};
+  document.onkeydown=e=>{if(activeGame==='flappy'&&e.key===' ')flappyTap()};
 }
 function flappyTap(){
   if(!flappyRunning)return;
   if(!flappyStarted){
     flappyStarted=true;
-    gameLoop=setInterval(tickFlappy,20);
+    gameTimer=setInterval(tickFlappy,20);
     for(let i=0;i<3;i++)flappyPipes.push({x:500+i*160,gap:Math.random()*200+100});
   }
   flappyVel=-5;
@@ -1327,10 +1327,10 @@ function tickFlappy(){
   flappyPipes.forEach(p=>p.x-=2);
   if(flappyPipes.length&&flappyPipes[0].x<-60){flappyPipes.shift();flappyPipes.push({x:flappyPipes[flappyPipes.length-1].x+160,gap:Math.random()*200+100});updateGameScore(++gameScore)}
   const cv=document.getElementById('cFlappy');if(!cv)return;
-  if(flappyY<0||flappyY>480){flappyRunning=false;clearInterval(gameLoop);showGameOver('游戏结束',gameScore,'🐦');return}
+  if(flappyY<0||flappyY>480){flappyRunning=false;clearInterval(gameTimer);showGameOver('游戏结束',gameScore,'🐦');return}
   for(const p of flappyPipes){
     if(170>p.x-25&&170<p.x+25){
-      if(flappyY<p.gap-60||flappyY>p.gap+60){flappyRunning=false;clearInterval(gameLoop);showGameOver('游戏结束',gameScore,'🐦');return}
+      if(flappyY<p.gap-60||flappyY>p.gap+60){flappyRunning=false;clearInterval(gameTimer);showGameOver('游戏结束',gameScore,'🐦');return}
     }
   }
   renderFlappy();
